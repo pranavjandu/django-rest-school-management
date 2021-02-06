@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.students',
     'apps.teachers',
-    'apps.academics'
+    'apps.academics',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +71,8 @@ TEMPLATES = [
         },
     },
 ]
+
+
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
@@ -104,6 +106,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_UNIQUE_EMAIL = True
+AUTH_USER_MODEL = 'users.User'
+
+REST_AUTH_SERIALIZERS = {
+    'LOGIN_SERIALIZER': 'users.serializers.LoginSerializer',
+    'USER_DETAILS_SERIALIZER':'users.serializers.CustomUserDetailsSerializer'
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'users.serializers.CustomRegisterSerializer',
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
