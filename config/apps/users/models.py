@@ -35,6 +35,7 @@ class User(AbstractBaseUser):
     '''
     Custom user model to use email authentication
     '''
+    id = models.AutoField(primary_key=True)
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,

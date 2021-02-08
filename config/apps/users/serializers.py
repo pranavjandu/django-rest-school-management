@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from apps.users.models import User
 from allauth.account.adapter import get_adapter
 from django.contrib.auth import authenticate
 
@@ -8,14 +8,14 @@ from django.contrib.auth import authenticate
 class UserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email',)
+        fields = ('id','email',)
         read_only_fields = ('email',)
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'password')
+        fields = ('id','email', 'password')
         extra_kwargs = {'password': {'write_only': True}}
 
     def get_cleaned_data(self):
