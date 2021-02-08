@@ -17,7 +17,7 @@ class Level(models.Model):
     name=models.CharField(max_length=255)
     description = models.CharField(max_length=255, null=True, blank=True)
     order_number = models.PositiveIntegerField(null=True, blank=True)
-    session = models.ForeignKey(Session,on_delete=models.CASCADE)
+    session = models.ForeignKey(Session,on_delete=models.CASCADE,related_name="session")
     objects=models.Manager()
 
     def __str__(self):
