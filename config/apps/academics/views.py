@@ -11,6 +11,7 @@ class SessionListView(APIView):
     """
     A class based view for creating and fetching session records
     """
+
     def get(self, format=None):
         """
         Get all the session records
@@ -35,6 +36,7 @@ class SessionListView(APIView):
         return Response(serializer.error_messages,
                         status=status.HTTP_400_BAD_REQUEST)
 
+
 class SessionDetailView(APIView):
     def get(self, request, id, format=None):
         """
@@ -45,7 +47,7 @@ class SessionDetailView(APIView):
         try:
             session = Session.objects.get(id=id)
         except:
-            error = {'error':'Session with given id not found.'}
+            error = {'error': 'Session with given id not found.'}
             return Response(error, status=status.HTTP_404_NOT_FOUND)
         serializer = SessionSerializer(session)
         return Response(serializer.data)
@@ -59,8 +61,9 @@ class ActiveSessionView(APIView):
         :return: Returns a session records
         """
         session = Session.objects.filter(is_active=True)
-        serializer = SessionSerializer(session,many=True)
+        serializer = SessionSerializer(session, many=True)
         return Response(serializer.data)
+
 
 class ActivateSessionView(APIView):
     def get(self, request, id, format=None):
@@ -72,7 +75,7 @@ class ActivateSessionView(APIView):
         try:
             session = Session.objects.get(id=id)
         except:
-            error = {'error':'Session with given id not found.'}
+            error = {'error': 'Session with given id not found.'}
             return Response(error, status=status.HTTP_404_NOT_FOUND)
         prev_session = Session.objects.filter(is_active=True)
         for x in prev_session:
@@ -106,9 +109,9 @@ class LevelListView(APIView):
         if serializer.is_valid(raise_exception=ValueError):
             level = serializer.create(validated_data=request.data)
             if level is None:
-                error = {'error':'Session with given id not found.'}
+                error = {'error': 'Session with given id not found.'}
                 return Response(error,
-                        status=status.HTTP_400_BAD_REQUEST)
+                                status=status.HTTP_400_BAD_REQUEST)
             level_serializer = LevelSerializer(level)
             return Response(level_serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.error_messages,
@@ -125,9 +128,9 @@ class LevelBySessionView(APIView):
         try:
             session = Session.objects.get(id=id)
         except:
-            error = {'error':'Session with given id not found.'}
+            error = {'error': 'Session with given id not found.'}
             return Response(error,
-                        status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_400_BAD_REQUEST)
         levels = Level.objects.filter(session=session)
         serializer = LevelSerializer(levels, many=True)
         return Response(serializer.data)
@@ -136,15 +139,81 @@ class LevelBySessionView(APIView):
 class LevelDetailView(APIView):
     def get(self, request, id, format=None):
         """
-        Get all the level records by level id
-        :param format: Format of the level records to return to
-        :return: Returns a list of level records
+        Get the level records by id
+        :param format: Format of the level record to return to
+        :return: Returns a level record
         """
         try:
             level = Level.objects.get(id=id)
         except:
-            error = {'error':'Level with given id not found.'}
+            error = {'error': 'Level with given id not found.'}
             return Response(error,
-                        status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_400_BAD_REQUEST)
         serializer = LevelSerializer(level)
+        return Response(serializer.data)
+
+
+class SectionListView(APIView):
+    def get(self, format=None):
+        """
+        Get all the section records
+        :param format: Format of the section records to return to
+        :return: Returns a list of section records
+        """
+        sections = Section.objects.all()
+        serializer = SectionSerializer(sections, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        """
+        Create a section record
+        :param format: Format of the section records to return to
+        :param request: Request object for creating section
+        :return: Returns a section record
+        """
+        serializer = SectionSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=ValueError):
+            section = serializer.create(validated_data=request.data)
+            if section is None:
+                error = {'error': 'Level with given id not found.'}
+                return Response(error,
+                                status=status.HTTP_400_BAD_REQUEST)
+            section_serializer = SectionSerializer(section)
+            return Response(section_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.error_messages,
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+class SectionByLevelView(APIView):
+    def get(self, request, id, format=None):
+        """
+        Get all the section records by level id
+        :param format: Format of the section records to return to
+        :return: Returns a list of section records
+        """
+        try:
+            level = Level.objects.get(id=id)
+        except:
+            error = {'error': 'Level with given id not found.'}
+            return Response(error,
+                            status=status.HTTP_400_BAD_REQUEST)
+        sections = Section.objects.filter(level=level)
+        serializer = SectionSerializer(sections, many=True)
+        return Response(serializer.data)
+
+
+class SectionDetailView(APIView):
+    def get(self, request, id, format=None):
+        """
+        Get the section records by id
+        :param format: Format of the section records to return to
+        :return: Returns a section record
+        """
+        try:
+            section = Section.objects.get(id=id)
+        except:
+            error = {'error': 'Section with given id not found.'}
+            return Response(error,
+                            status=status.HTTP_400_BAD_REQUEST)
+        serializer = SectionSerializer(section)
         return Response(serializer.data)
