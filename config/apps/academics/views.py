@@ -217,3 +217,207 @@ class SectionDetailView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
         serializer = SectionSerializer(section)
         return Response(serializer.data)
+
+
+class ClassListView(APIView):
+    def get(self, format=None):
+        """
+        Get all the class records
+        :param format: Format of the class records to return to
+        :return: Returns a list of class records
+        """
+        classes = Class.objects.all()
+        serializer = ClassSerializer(classes, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        """
+        Create a class record
+        :param format: Format of the class records to return to
+        :param request: Request object for creating class
+        :return: Returns a class record
+        """
+        serializer = ClassSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=ValueError):
+            classx = serializer.create(validated_data=request.data)
+            if classx is None:
+                error = {'error': 'Section with given id not found.'}
+                return Response(error,
+                                status=status.HTTP_400_BAD_REQUEST)
+            class_serializer = ClassSerializer(classx)
+            return Response(class_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.error_messages,
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+class ClassBySectionView(APIView):
+    def get(self, request, id, format=None):
+        """
+        Get all the class records by section id
+        :param format: Format of the class records to return to
+        :return: Returns a list of class records
+        """
+        try:
+            section = Section.objects.get(id=id)
+        except:
+            error = {'error': 'Section with given id not found.'}
+            return Response(error,
+                            status=status.HTTP_400_BAD_REQUEST)
+        classes = Class.objects.filter(section=section)
+        serializer = ClassSerializer(classes, many=True)
+        return Response(serializer.data)
+
+class ClassDetailView(APIView):
+    def get(self, request, id, format=None):
+        """
+        Get the class records by id
+        :param format: Format of the class records to return to
+        :return: Returns a class record
+        """
+        try:
+            class_obj = Class.objects.get(id=id)
+        except:
+            error = {'error': 'Class with given id not found.'}
+            return Response(error,
+                            status=status.HTTP_400_BAD_REQUEST)
+        serializer = ClassSerializer(class_obj)
+        return Response(serializer.data)
+
+class ClassStudentsView(APIView):
+    def get(self, request, id, format=None):
+        """
+        Get the class-student tree records by class id
+        :param format: Format of the class records to return to
+        :return: Returns a class record
+        """
+        try:
+            class_obj = Class.objects.get(id=id)
+        except:
+            error = {'error': 'Class with given id not found.'}
+            return Response(error,
+                            status=status.HTTP_400_BAD_REQUEST)
+        serializer = ClassWithStudentsSerializer(class_obj)
+        return Response(serializer.data)
+
+class ClassSubjectView(APIView):
+    def get(self, request, id, format=None):
+        """
+        Get the class-subject tree records by class id
+        :param format: Format of the class records to return to
+        :return: Returns a class record
+        """
+        try:
+            class_obj = Class.objects.get(id=id)
+        except:
+            error = {'error': 'Class with given id not found.'}
+            return Response(error,
+                            status=status.HTTP_400_BAD_REQUEST)
+        try:
+            classsubject_objects = class_obj.classsubjects
+        except:
+            error = {'error': 'Error in retrieving class-subjects'}
+            return Response(error,
+                            status=status.HTTP_400_BAD_REQUEST)           
+        serializer = ClassSubjectSerializer(classsubject_objects, many=True)
+        return Response(serializer.data)
+
+
+class ClassSubjectListView(APIView):
+    def get(self, format=None):
+        """
+        Get all the classsubject records
+        :param format: Format of the classsubject records to return to
+        :return: Returns a list of classsubject records
+        """
+        classsubjects = ClassSubject.objects.all()
+        serializer = ClassSerializer(classsubjects, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        """
+        Create a classsubject record
+        :param format: Format of the classsubject records to return to
+        :param request: Request object for creating classsubject
+        :return: Returns a classsubject record
+        """
+        serializer = ClassSubjectSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=ValueError):
+            classsubject = serializer.create(validated_data=request.data)
+            if classsubject is None:
+                error = {'error': 'Error in creating the class-subject'}
+                return Response(error,
+                                status=status.HTTP_400_BAD_REQUEST)
+            classsubject_serializer = ClassSubjectSerializer(classsubject)
+            return Response(classsubject_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.error_messages,
+                        status=status.HTTP_400_BAD_REQUEST)
+
+class SubjectListView(APIView):
+    def get(self, format=None):
+        """
+        Get all the subject records
+        :param format: Format of the subject records to return to
+        :return: Returns a list of subject records
+        """
+        subjects = Subject.objects.all()
+        serializer = SubjectSerializer(subjects, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        """
+        Create a subject record
+        :param format: Format of the subject records to return to
+        :param request: Request object for creating subject
+        :return: Returns a subject record
+        """
+        serializer = SubjectSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=ValueError):
+            subject = serializer.create(validated_data=request.data)
+            if subject is None:
+                error = {'error': 'Section with given id not found.'}
+                return Response(error,
+                                status=status.HTTP_400_BAD_REQUEST)
+            subject_serializer = SubjectSerializer(subject)
+            return Response(subject_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.error_messages,
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
+class SubjectDetailView(APIView):
+    def get(self, request, id, format=None):
+        """
+        Get the subject  records by id
+        :param format: Format of the subject  records to return to
+        :return: Returns a subject  record
+        """
+        try:
+            subject_obj = Subject.objects.get(id=id)
+        except:
+            error = {'error': 'Subject with given id not found.'}
+            return Response(error,
+                            status=status.HTTP_400_BAD_REQUEST)
+        serializer = SubjectSerializer(subject_obj)
+        return Response(serializer.data)
+
+
+class ClassTeacherView(APIView):
+    def get(self, request, id, format=None):
+        """
+        Get the class-teacher tree records by class id
+        :param format: Format of the class records to return to
+        :return: Returns a class record
+        """
+        try:
+            class_obj = Class.objects.get(id=id)
+        except:
+            error = {'error': 'Class with given id not found.'}
+            return Response(error,
+                            status=status.HTTP_400_BAD_REQUEST)
+        try:
+            classsubject_objects = class_obj.classsubjects
+        except:
+            error = {'error': 'Error in retrieving class-subjects'}
+            return Response(error,
+                            status=status.HTTP_400_BAD_REQUEST)           
+        serializer = ClassSubjectSerializer(classsubject_objects, many=True)
+        return Response(serializer.data)

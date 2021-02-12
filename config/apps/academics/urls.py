@@ -29,4 +29,18 @@ urlpatterns = [
          name="section_detail"),
     path('section/level/<int:id>',
          views.SectionByLevelView.as_view(), name="section_by_level"),
+
+
+    path('class', views.ClassListView.as_view(), name="class_list"),
+    path('class/section/<int:id>',
+         views.ClassBySectionView.as_view(), name="class_by_section"),
+    path('class/students/<int:id>', views.ClassStudentsView.as_view(), name="class_students"),
+    path('class/subjects/<int:id>', views.ClassSubjectView.as_view(), name="class_subjects"),
+    path('class/teacher/<int:id>',views.ClassTeacherView.as_view(), name="class_teachers"),
+
+    path('classsubject', views.ClassSubjectListView.as_view()),
+
+
+    path('subject', views.SubjectListView.as_view(), name="subject_list"),
+    path('subject/<int:id>', views.SubjectDetailView.as_view(), name="subject_detail")
 ]

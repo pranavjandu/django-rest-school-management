@@ -1,4 +1,7 @@
-from apps.academics.models import Level, Section, Session
+from apps.teachers.models import Teacher
+from apps.students.serializers import StudentSerializer
+from apps.teachers.serializers import TeacherSerializer
+from apps.academics.models import Class, ClassSubject, Level, Section, Session, Subject
 from rest_framework import serializers
 
 
@@ -72,3 +75,116 @@ class SectionSerializer(serializers.ModelSerializer):
             return None
         section = Section.objects.create(level=level, **validated_data)
         return level
+
+
+class ClassSerializer(serializers.ModelSerializer):
+    """
+    A class serializer to return the class details
+    """
+    section = SectionSerializer(read_only=True)
+
+    class Meta:
+        model = Class
+        fields = ('id',
+                  'name',
+                  'description',
+                  'order_number',
+                  'section')
+
+    def create(self, validated_data):
+        """
+        Overriding the default create method of the Model serializer.
+        :param validated_data: data containing all the details of class
+        :return: returns a successfully created class record
+        """
+        try:
+            section_id = validated_data.pop('section')
+            section = Section.objects.get(id=section_id)
+        except:
+            return None
+        classx = Class.objects.create(section=section, **validated_data)
+        return classx
+
+
+class SubjectSerializer(serializers.ModelSerializer):
+    """
+    A class serializer to return the subject details
+    """
+    section = SectionSerializer(read_only=True)
+
+    class Meta:
+        model = Subject
+        fields = ('id',
+                  'name',
+                  'description',
+                  'external_subject_id',
+                  'section')
+
+    def create(self, validated_data):
+        """
+        Overriding the default create method of the Model serializer.
+        :param validated_data: data containing all the details of subject
+        :return: returns a successfully created subject record
+        """
+        try:
+            section_id = validated_data.pop('section')
+            section = Section.objects.get(id=section_id)
+        except:
+            return None
+        subject = Subject.objects.create(section=section, **validated_data)
+        return subject
+
+class ClassSubjectSerializer(serializers.ModelSerializer):
+    """
+    A class serializer to return the class subject details
+    """   
+    classes = ClassSerializer(read_only=True)
+    subject = SubjectSerializer(read_only=True)
+    teacher = TeacherSerializer(read_only=True)
+
+    class Meta:
+        model = ClassSubject
+        fields = ('id',
+                  'classes',
+                  'subject',
+                  'teacher',)
+
+    def create(self, validated_data):
+        """
+        Overriding the default create method of the Model serializer.
+        :param validated_data: data containing all the details of classsubject
+        :return: returns a successfully created classsubject record
+        """
+        try:
+            class_id = validated_data.pop('class')
+            classx = Class.objects.get(id=class_id)
+        except:
+            return None
+        try:
+            subject_id = validated_data.pop('subject')
+            subject = Subject.objects.get(id=subject_id)
+        except:
+            return None
+        try:
+            teacher_id = validated_data.pop('teacher')
+            teacher = Teacher.objects.get(id=teacher_id)
+        except:
+            return None
+        classsubject = ClassSubject.objects.create(classes=classx, subject=subject, teacher=teacher)
+        return classsubject
+    
+class ClassWithStudentsSerializer(serializers.ModelSerializer):
+    section = SectionSerializer(read_only=True)
+    students = StudentSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Class
+        fields = ('id',
+                  'name',
+                  'description',
+                  'order_number',
+                  'section',
+                  'students')
+
+
+
